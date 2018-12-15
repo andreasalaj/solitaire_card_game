@@ -63,6 +63,7 @@ int readFile(char *filename, Card* deck)
     char temp[MAX_LINE_LEN];
     while (fgets(temp, MAX_LINE_LEN, input))
     {
+      // TODO: properly validate lines with regex
       char *clean_line = malloc(strlen(temp) + 1);
       char *clp = clean_line;
       char *tmp = temp;
@@ -271,23 +272,31 @@ int main(int argc, char *argv[])
   Card *stack5 = NULL;
   Card *stack6 = NULL;
 
-  int r = readFile(filename, deck);
+  int r = readFile(filename, deck);  // read cards from config file
   if (r != 0)
   {
     return r;
   }
   stack0 = deck;
 
-  // for (int i = 0; i < 26; i++)
-  // {
-  //   char label[4];
-  //   cardToStr(stack0[i].color, stack0[i].value, &label);
-  //   printf("%s\n", label);
-  // }
-
-
-
   printField(stack0, stack1, stack2, stack3, stack4, stack5, stack6);
+
+  // TODO: Deal cards to stacks
+
+  while (1)
+  {
+    printf("esp> ");
+    char input[256];
+    gets(input);  // TODO: implement safe input with getc
+    if (strstr(input, "exit") != NULL)
+    {
+      return 0;
+    }
+    // TODO: implement invalid command error
+    // TODO: implement help command
+    // TODO: implement move command: only validation of arguments
+  }
+
   free(deck);
   return 0;
 }
