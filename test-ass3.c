@@ -270,8 +270,7 @@ void stackCardToStr(Card* stack, int card_index, char* label, int is_stack0)
 ///
 /// @return
 //
-void printField(Card* stack0, Card* stack1, Card* stack2, Card* stack3,
-                Card* stack4, Card* stack5, Card* stack6)
+void printField(Card* stacks[])
 {
   printf("0   | 1   | 2   | 3   | 4   | DEP | DEP\n");
   printf("---------------------------------------\n");
@@ -284,19 +283,57 @@ void printField(Card* stack0, Card* stack1, Card* stack2, Card* stack3,
     char label4[4] = "   \0";
     char label5[4] = "   \0";
     char label6[4] = "   \0";
-    stackCardToStr(stack0, line_counter, &label0, 1);
-    stackCardToStr(stack1, line_counter, &label1, 0);
-    stackCardToStr(stack2, line_counter, &label2, 0);
-    stackCardToStr(stack3, line_counter, &label3, 0);
-    stackCardToStr(stack4, line_counter, &label4, 0);
-    stackCardToStr(stack5, line_counter, &label5, 0);
-    stackCardToStr(stack6, line_counter, &label6, 0);
+    stackCardToStr(stacks[0], line_counter, &label0, 1);
+    stackCardToStr(stacks[1], line_counter, &label1, 0);
+    stackCardToStr(stacks[2], line_counter, &label2, 0);
+    stackCardToStr(stacks[3], line_counter, &label3, 0);
+    stackCardToStr(stacks[4], line_counter, &label4, 0);
+    stackCardToStr(stacks[5], line_counter, &label5, 0);
+    stackCardToStr(stacks[6], line_counter, &label6, 0);
 
     printf("%s | %s | %s | %s | %s | %s | %s\n", label0, label1, label2,
            label3, label4, label5, label6);
   }
 }
 
+void dealCards(Card* deck, Card* stacks[])
+{
+  char label[4] = "   \0";
+  // Go to last card in deck
+  Card* card = deck;
+  while ((*card).next != NULL) {
+    card = (*card).next;
+  }
+
+  Card* next_card_to_deal = NULL;
+  int start_stack_idx = 1;
+  for (int start_stack_idx = 1; start_stack_idx <=4; start_stack_idx++)
+  {
+    for (int stack_idx = start_stack_idx; stack_idx <=4; stack_idx++)
+    {
+      next_card_to_deal = (*card).prev;
+      if (stacks[stack_idx] == NULL)
+      {
+        stacks[stack_idx] = card;
+        card->next = NULL;
+        card->prev = NULL;
+      }
+      else
+      {
+        // got to last card of stack
+        Card* last_stack_card = stacks[stack_idx];
+        while ((*last_stack_card).next != NULL) {
+          last_stack_card = (*last_stack_card).next;
+        }
+        // attach card to the end of stack
+        last_stack_card->next = card;
+        card->prev = last_stack_card;
+      }
+      card = next_card_to_deal;
+      card->next = NULL;
+    }
+  }
+}
 //-----------------------------------------------------------------------------
 ///
 /// The main program.
@@ -317,24 +354,19 @@ int main(int argc, char *argv[])
   char *filename = argv[1];
 
   Card* deck = (Card*) malloc(27 * sizeof(Card));
-  Card *stack0 = NULL;
-  Card *stack1 = NULL;
-  Card *stack2 = NULL;
-  Card *stack3 = NULL;
-  Card *stack4 = NULL;
-  Card *stack5 = NULL;
-  Card *stack6 = NULL;
+  Card* stacks[7] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+
 
   int card_reader = readFile(filename, deck);  // read cards from config file
   if (card_reader != 0)
   {
     return card_reader;
   }
-  stack0 = deck;
+  stacks[0] = deck;
 
-  printField(stack0, stack1, stack2, stack3, stack4, stack5, stack6);
-
-  // TODO: Deal cards to stacks
+  // Deal cards to stacks
+  dealCards(deck, stacks);
+  printField(stacks);
 
   while (1)
   {
@@ -407,6 +439,7 @@ int main(int argc, char *argv[])
       {
         // TODO: the hard part: check if the move is valid according to game rules (colors, value order, sorting)
         printf("Not implemented yet...\n");
+        printField(stacks);
       }
     }
     else
