@@ -53,7 +53,7 @@ typedef struct
 
 //-----------------------------------------------------------------------------
 ///
-/// ReadFile
+/// readFile
 ///
 /// @param
 /// @param
@@ -199,7 +199,7 @@ int readFile(char *filename, Card* deck)
 
 //-----------------------------------------------------------------------------
 ///
-/// CardToStr
+/// cardToStr
 ///
 /// @param
 /// @param
@@ -217,7 +217,7 @@ void cardToStr(int color, int value, char* label)
 
 //-----------------------------------------------------------------------------
 ///
-/// StackCardToStr finds card in stack and prints its three character
+/// stackCardToStr finds card in stack and prints its three character
 /// representation.
 ///
 /// @param
@@ -262,7 +262,7 @@ void stackCardToStr(Card* stack, int card_index, char* label, int is_stack0)
 
 //-----------------------------------------------------------------------------
 ///
-/// PrintField
+/// printField
 ///
 /// @param
 /// @param
@@ -296,10 +296,19 @@ void printField(Card* stacks[])
   }
 }
 
+//-----------------------------------------------------------------------------
+///
+/// dealCards
+///
+/// @param deck: Pointer to the beginning of array of all cards in the game
+/// @param stacks: Array of pointers to the first card of each stack
+///
+///
+/// @return void
+//
 void dealCards(Card* deck, Card* stacks[])
 {
-  char label[4] = "   \0";
-  // Go to last card in deck
+  // Go to last card in deck since we start dealing from the top of deck
   Card* card = deck;
   while ((*card).next != NULL) {
     card = (*card).next;
@@ -311,26 +320,28 @@ void dealCards(Card* deck, Card* stacks[])
   {
     for (int stack_idx = start_stack_idx; stack_idx <=4; stack_idx++)
     {
-      next_card_to_deal = (*card).prev;
+      next_card_to_deal = (*card).prev;  // remember next card from the top of deck
+      // if the stack is empty, assign it the first card
       if (stacks[stack_idx] == NULL)
       {
         stacks[stack_idx] = card;
         card->next = NULL;
         card->prev = NULL;
       }
-      else
+      else // if stack is not empty, we put the new card on top of last card
       {
         // got to last card of stack
         Card* last_stack_card = stacks[stack_idx];
         while ((*last_stack_card).next != NULL) {
           last_stack_card = (*last_stack_card).next;
         }
-        // attach card to the end of stack
+        // attach new card to the top of stack
         last_stack_card->next = card;
         card->prev = last_stack_card;
       }
+      // take the next card we prepared from the top of deck
       card = next_card_to_deal;
-      card->next = NULL;
+      card->next = NULL; // now it is on top since we removed one card
     }
   }
 }
@@ -437,7 +448,10 @@ int main(int argc, char *argv[])
       }
       else
       {
-        // TODO: the hard part: check if the move is valid according to game rules (colors, value order, sorting)
+        // TODO: check if the specified card is valid top card or cards on stacks 1-4 with everything sorted bellow
+        // TODO: if valid top card check if it's possible to move to target stack and move
+        // TODO: if valid substack check the same and move
+        // TODO: separate cases if target stacks are 5 or 6 since different sorting applies there
         printf("Not implemented yet...\n");
         printField(stacks);
       }
