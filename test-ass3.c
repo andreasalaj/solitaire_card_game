@@ -63,22 +63,6 @@ typedef struct
 //
 int readFile(char *filename, Card* deck)
 {
-  char *red = "RED";
-  char *black = "BLACK";
-  char *v_a = "A";
-  char *v_2 = "2";
-  char *v_3 = "3";
-  char *v_4 = "4";
-  char *v_5 = "5";
-  char *v_6 = "6";
-  char *v_7 = "7";
-  char *v_8 = "8";
-  char *v_9 = "9";
-  char *v_10 = "10";
-  char *v_J = "J";
-  char *v_Q = "Q";
-  char *v_K = "K";
-
   int card_num = 0;
   int MAX_LINE_LEN = 1000;
   FILE *input = fopen(filename, "r");
@@ -87,104 +71,100 @@ int readFile(char *filename, Card* deck)
     char temp[MAX_LINE_LEN];
     while (fgets(temp, MAX_LINE_LEN, input))
     {
-
-      // TODO: properly validate lines with regex
-      char *clean_line = malloc(strlen(temp) + 1);
-      char *clp = clean_line;
-      char *tmp = temp;
-      do
-      {
-        if (*tmp != ' ')
-        {
-          *clp = *tmp;
-          *clp++;
-        }
-      } while(*tmp++);
-
-      if (clean_line[0] == '\n')
+      //printf("---- %s", temp);
+      char *token;
+      token = strtok(temp, " \n");
+      int token_num = 0;
+      if (token == NULL)
       {
         continue;
       }
+      while ( token != NULL )
+      {
+        if (token_num == 0)
+        {
+          //printf("T0 -> %s\n", token);
+          if(strstr(token, "RED") != NULL && strlen(token) == strlen("RED"))
+          {
+            deck[card_num].color = RED;
+          }
+          else if(strstr(token, "BLACK") != NULL && strlen(token) == strlen("BLACK"))
+          {
+            deck[card_num].color = BLACK;
+          }
+          else
+          {
+            printf("[ERR] Invalid file!\n");
+            fclose(input);
+            return 3;
+          }
+        }
+        if (token_num == 1)
+        {
+          //printf("T1 -> %s (%d)\n", token, strlen(token));
+          if(strstr(token, "A") != NULL && strlen(token) == strlen("A"))
+          {
+            deck[card_num].value = V_A;
+          }
+          else if(strstr(token, "2") != NULL && strlen(token) == strlen("2"))
+          {
+            deck[card_num].value = V_2;
+          }
+          else if(strstr(token, "3") != NULL && strlen(token) == strlen("3"))
+          {
+            deck[card_num].value = V_3;
+          }
+          else if(strstr(token, "4") != NULL && strlen(token) == strlen("4"))
+          {
+            deck[card_num].value = V_4;
+          }
+          else if(strstr(token, "5") != NULL && strlen(token) == strlen("5"))
+          {
+            deck[card_num].value = V_5;
+          }
+          else if(strstr(token, "6") != NULL && strlen(token) == strlen("6"))
+          {
+            deck[card_num].value = V_6;
+          }
+          else if(strstr(token, "7") != NULL && strlen(token) == strlen("7"))
+          {
+            deck[card_num].value = V_7;
+          }
+          else if(strstr(token, "8") != NULL && strlen(token) == strlen("8"))
+          {
+            deck[card_num].value = V_8;
+          }
+          else if(strstr(token, "9") != NULL && strlen(token) == strlen("9"))
+          {
+            deck[card_num].value = V_9;
+          }
+          else if(strstr(token, "10") != NULL && strlen(token) == strlen("10"))
+          {
+            deck[card_num].value = V_10;
+          }
+          else if(strstr(token, "J") != NULL && strlen(token) == strlen("J"))
+          {
+            deck[card_num].value = V_J;
+          }
+          else if(strstr(token, "Q") != NULL && strlen(token) == strlen("Q"))
+          {
+            deck[card_num].value = V_Q;
+          }
+          else if(strstr(token, "K") != NULL && strlen(token) == strlen("K"))
+          {
+            deck[card_num].value = V_K;
+          }
+          else
+          {
+            printf("[ERR] Invalid file!\n");
+            fclose(input);
+            return 3;
+          }
+        }
+        token = strtok(NULL," \n");
+        token_num++;
+      }
 
-      if(strstr(clean_line, red) != NULL)
-      {
-        deck[card_num].color = RED;
-        char* p = strstr(clean_line, red);
-        strncpy(p, "___", 3);
-      }
-      else if(strstr(clean_line, black) != NULL)
-      {
-        deck[card_num].color = BLACK;
-        char* p = strstr(clean_line, black);
-        strncpy(p, "_____", 5);
-      }
-      else
-      {
-        printf("[ERR] Invalid file!\n");
-        free(clean_line);
-        fclose(input);
-        return 3;
-      }
-
-      if(strstr(clean_line, v_a) != NULL)
-      {
-        deck[card_num].value = V_A;
-      }
-      else if(strstr(clean_line, v_2) != NULL)
-      {
-        deck[card_num].value = V_2;
-      }
-      else if(strstr(clean_line, v_3) != NULL)
-      {
-        deck[card_num].value = V_3;
-      }
-      else if(strstr(clean_line, v_4) != NULL)
-      {
-        deck[card_num].value = V_4;
-      }
-      else if(strstr(clean_line, v_5) != NULL)
-      {
-        deck[card_num].value = V_5;
-      }
-      else if(strstr(clean_line, v_6) != NULL)
-      {
-        deck[card_num].value = V_6;
-      }
-      else if(strstr(clean_line, v_7) != NULL)
-      {
-        deck[card_num].value = V_7;
-      }
-      else if(strstr(clean_line, v_8) != NULL)
-      {
-        deck[card_num].value = V_8;
-      }
-      else if(strstr(clean_line, v_9) != NULL)
-      {
-        deck[card_num].value = V_9;
-      }
-      else if(strstr(clean_line, v_10) != NULL)
-      {
-        deck[card_num].value = V_10;
-      }
-      else if(strstr(clean_line, v_J) != NULL)
-      {
-        deck[card_num].value = V_J;
-      }
-      else if(strstr(clean_line, v_Q) != NULL)
-      {
-        deck[card_num].value = V_Q;
-      }
-      else if(strstr(clean_line, v_K) != NULL)
-      {
-        deck[card_num].value = V_K;
-      }
-      else
-      {
-        printf("[ERR] Invalid file!\n");
-        free(clean_line);
-        fclose(input);
-        return 3;
-      }
       if (card_num == 0) {
         deck[card_num].prev = NULL;
       }
