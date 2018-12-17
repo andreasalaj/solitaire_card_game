@@ -161,6 +161,12 @@ int readFile(char *filename, Card* deck)
             return 3;
           }
         }
+        if (token_num > 1)
+        {
+            printf("[ERR] Invalid file!\n");
+            fclose(input);
+            return 3;
+        }
         token = strtok(NULL," \n");
         token_num++;
       }
