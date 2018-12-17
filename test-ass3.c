@@ -1,3 +1,16 @@
+//-----------------------------------------------------------------------------
+// ass3.c
+//
+// <Explanation of the program ...>
+// <... May have multiple lines.>
+//
+// Group: Group 5, study assistant Michael Hancianu
+//
+// Authors: <Name> <Matriculum Number>
+// <Name> <Matriculum Number>
+//-----------------------------------------------------------------------------
+//
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,7 +40,8 @@ enum card_value
   V_K
 };
 
-const char *card_value_str[] = {"A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9 ", "10", "J ", "Q ", "K "};
+const char *card_value_str[] = {"A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ",
+                                "8 ", "9 ", "10", "J ", "Q ", "K "};
 
 typedef struct
 {
@@ -37,6 +51,16 @@ typedef struct
   struct Card *prev; // pointer to previous card
 } Card;
 
+//-----------------------------------------------------------------------------
+///
+/// ReadFile
+///
+/// @param
+/// @param
+///
+///
+/// @return
+//
 int readFile(char *filename, Card* deck)
 {
   char *red = "RED";
@@ -63,6 +87,7 @@ int readFile(char *filename, Card* deck)
     char temp[MAX_LINE_LEN];
     while (fgets(temp, MAX_LINE_LEN, input))
     {
+
       // TODO: properly validate lines with regex
       char *clean_line = malloc(strlen(temp) + 1);
       char *clp = clean_line;
@@ -186,6 +211,16 @@ int readFile(char *filename, Card* deck)
   }
 }
 
+//-----------------------------------------------------------------------------
+///
+/// CardToStr
+///
+/// @param
+/// @param
+///
+///
+/// @return
+//
 void cardToStr(int color, int value, char* label)
 {
   label[0] = card_color_str[color];
@@ -194,46 +229,67 @@ void cardToStr(int color, int value, char* label)
   label[3] = '\0';
 }
 
-// find card in stack and print its 3 char representation
-void stackCardToStr(Card* stack, int card_i, char* label, int is_stack0)
+//-----------------------------------------------------------------------------
+///
+/// StackCardToStr finds card in stack and prints its three character
+/// representation.
+///
+/// @param
+/// @param
+///
+///
+/// @return
+//
+void stackCardToStr(Card* stack, int card_index, char* label, int is_stack0)
 {
   if (stack == NULL)
   {
     return;  // stack is empty
   }
-  // Find the card in stack at index card_i
-  Card* c = stack;  // start with first card (stack always points to first card)
-  int i = 0;  // current card counter
-  while (c != NULL)  // check if the card exists
+  // Find the card in stack at index card_index
+  Card* card = stack;  // start with first card (stack always points to first card)
+  int card_counter = 0;  // current card counter
+  while (card != NULL)  // check if the card exists
   {
-    if (card_i == i)  // we reached the target card
+    if (card_index == card_counter)  // we reached the target card
     {
       if (is_stack0)
       {
-        if ((*c).next != NULL)
+        if ((*card).next != NULL)
         {
           strncpy(label, "X  ", 3);
         }
         else
         {
-          cardToStr((*c).color, (*c).value, label);
+          cardToStr((*card).color, (*card).value, label);
         }
       }
       else
       {
-        cardToStr((*c).color, (*c).value, label);
+        cardToStr((*card).color, (*card).value, label);
       }
     }
-    i++;
-    c = (*c).next;  // point to next card
+    card_counter++;
+    card = (*card).next;  // point to next card
   }
 }
 
-void printField(Card* stack0, Card* stack1, Card* stack2, Card* stack3, Card* stack4, Card* stack5, Card* stack6)
+//-----------------------------------------------------------------------------
+///
+/// PrintField
+///
+/// @param
+/// @param
+///
+///
+/// @return
+//
+void printField(Card* stack0, Card* stack1, Card* stack2, Card* stack3,
+                Card* stack4, Card* stack5, Card* stack6)
 {
   printf("0   | 1   | 2   | 3   | 4   | DEP | DEP\n");
   printf("---------------------------------------\n");
-  for (int i = 0; i < 16; i++)
+  for (int line_counter = 0; line_counter < 16; line_counter++)
   {
     char label0[4] = "   \0";
     char label1[4] = "   \0";
@@ -242,18 +298,29 @@ void printField(Card* stack0, Card* stack1, Card* stack2, Card* stack3, Card* st
     char label4[4] = "   \0";
     char label5[4] = "   \0";
     char label6[4] = "   \0";
-    stackCardToStr(stack0, i, &label0, 1);
-    stackCardToStr(stack1, i, &label1, 0);
-    stackCardToStr(stack2, i, &label2, 0);
-    stackCardToStr(stack3, i, &label3, 0);
-    stackCardToStr(stack4, i, &label4, 0);
-    stackCardToStr(stack5, i, &label5, 0);
-    stackCardToStr(stack6, i, &label6, 0);
+    stackCardToStr(stack0, line_counter, &label0, 1);
+    stackCardToStr(stack1, line_counter, &label1, 0);
+    stackCardToStr(stack2, line_counter, &label2, 0);
+    stackCardToStr(stack3, line_counter, &label3, 0);
+    stackCardToStr(stack4, line_counter, &label4, 0);
+    stackCardToStr(stack5, line_counter, &label5, 0);
+    stackCardToStr(stack6, line_counter, &label6, 0);
 
-    printf("%s | %s | %s | %s | %s | %s | %s\n", label0, label1, label2, label3, label4, label5, label6);
+    printf("%s | %s | %s | %s | %s | %s | %s\n", label0, label1, label2,
+           label3, label4, label5, label6);
   }
 }
 
+//-----------------------------------------------------------------------------
+///
+/// The main program.
+///
+/// @param
+/// @param
+///
+///
+/// @return
+//
 int main(int argc, char *argv[])
 {
   if (argc != 2)
@@ -272,10 +339,10 @@ int main(int argc, char *argv[])
   Card *stack5 = NULL;
   Card *stack6 = NULL;
 
-  int r = readFile(filename, deck);  // read cards from config file
-  if (r != 0)
+  int card_reader = readFile(filename, deck);  // read cards from config file
+  if (card_reader != 0)
   {
-    return r;
+    return card_reader;
   }
   stack0 = deck;
 
@@ -286,9 +353,9 @@ int main(int argc, char *argv[])
   while (1)
   {
     printf("esp> ");
-    char input[256];
-    gets(input);  // TODO: implement safe input with getc
-    if (strstr(input, "exit") != NULL)
+    char user_input[256];
+    gets(user_input);  // TODO: implement safe user_input with getc
+    if (strstr(user_input, "exit") != NULL)
     {
       return 0;
     }
