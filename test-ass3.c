@@ -341,15 +341,77 @@ int main(int argc, char *argv[])
     printf("esp> ");
     char user_input[256];
     gets(user_input);  // TODO: implement safe user_input with getc
-    if (strstr(user_input, "exit") != NULL)
-    {
-      return 0;
-    }
-    // TODO: implement invalid command error
-    // TODO: implement help command
-    // TODO: implement move command: only validation of arguments
-  }
 
-  free(deck);
-  return 0;
+    char tmp_input_for_counting[256];
+    strcpy(tmp_input_for_counting, user_input);
+
+    char *token;
+    token = strtok(tmp_input_for_counting, " \n");
+    int token_num = 0;
+    if (token == NULL)
+    {
+      continue;
+    }
+    while (token != NULL)
+    {
+      token = strtok(NULL," \n");
+      token_num++;
+    }
+
+    if (token_num == 1)  // exit or help command
+    {
+      token = strtok(user_input, " \n");
+      if (strcasecmp(token, "exit") == 0)
+      {
+        free(deck);
+        return 0;
+      }
+      else if (strcasecmp(token, "help") == 0)
+      {
+        printf("possible command:\n");
+        printf(" - move <color> <value> to <stacknumber>\n");
+        printf(" - help\n");
+        printf(" - exit\n");
+      }
+      else
+      {
+        printf("[ERR] Invalid command!\n");
+      }
+    }
+    else if (token_num == 5)  // move command
+    {
+      char tmp_input_for_tokenization[256];
+      strcpy(tmp_input_for_tokenization, user_input);
+
+      char *move_in = strtok(tmp_input_for_tokenization, " \n");
+      char *color_in = strtok(NULL," \n");
+      char *value_in = strtok(NULL," \n");
+      char *to_in = strtok(NULL," \n");
+      char *stack_in = strtok(NULL," \n");
+
+      // validate move command
+      if (strcasecmp(move_in, "move") != 0 || (strcasecmp(color_in, "black") != 0 && strcasecmp(color_in, "red") != 0)
+          || (strcasecmp(value_in, "A") != 0 && strcasecmp(value_in, "2") != 0 && strcasecmp(value_in, "3") != 0 &&
+              strcasecmp(value_in, "4") != 0 && strcasecmp(value_in, "5") != 0 && strcasecmp(value_in, "6") != 0 &&
+              strcasecmp(value_in, "7") != 0 && strcasecmp(value_in, "8") != 0 && strcasecmp(value_in, "9") != 0 &&
+              strcasecmp(value_in, "10") != 0 && strcasecmp(value_in, "J") != 0 && strcasecmp(value_in, "Q") != 0 &&
+              strcasecmp(value_in, "K") != 0)
+          || strcasecmp(to_in, "to") != 0
+          || (strcasecmp(stack_in, "0") != 0 && strcasecmp(stack_in, "1") != 0 && strcasecmp(stack_in, "2") != 0 &&
+              strcasecmp(stack_in, "3") != 0 && strcasecmp(stack_in, "4") != 0 && strcasecmp(stack_in, "5") != 0 &&
+              strcasecmp(stack_in, "6") != 0))
+      {
+        printf("[ERR] Invalid command!\n");
+      }
+      else
+      {
+        // TODO: the hard part: check if the move is valid according to game rules (colors, value order, sorting)
+        printf("Not implemented yet...\n");
+      }
+    }
+    else
+    {
+      printf("[ERR] Invalid command!\n");
+    }
+  }
 }
