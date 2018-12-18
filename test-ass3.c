@@ -143,7 +143,6 @@ int readFile(char *filename, Card* deck)
     char line[MAX_LINE_LEN];
     while (fgets(line, MAX_LINE_LEN, input))
     {
-      //printf("---- %s", line);
       char *token;
       token = strtok(line, " \n");
       int token_num = 0;
@@ -155,7 +154,6 @@ int readFile(char *filename, Card* deck)
       {
         if (token_num == 0)
         {
-          //printf("T0 -> %s\n", token);
           if(strstr(token, "RED") != NULL && strlen(token) == strlen("RED"))
           {
             deck[card_num].color = RED;
@@ -173,7 +171,6 @@ int readFile(char *filename, Card* deck)
         }
         if (token_num == 1)
         {
-          //printf("T1 -> %s (%d)\n", token, strlen(token));
           if(strstr(token, "A") != NULL && strlen(token) == strlen("A"))
           {
             deck[card_num].value = V_A;
@@ -461,12 +458,12 @@ int findStack(Card* target_card, Card* stacks[])
     for (int i = 0; i < 7; i++)
     {
         Card* card = stacks[i];
-        do {
+        while (card != NULL) {
             if (card->color == target_card->color && card->value == target_card->value) {
                 return i;
             }
             card = (*card).next;
-        } while (card != NULL);
+        };
     }
 }
 
@@ -516,7 +513,6 @@ int main(int argc, char *argv[])
       user_input[character_counter++] = character;
     }
     user_input[character_counter] = '\0';
-    //printf("%s\n", user_input);
 
     char tmp_input_for_counting[256];
     strcpy(tmp_input_for_counting, user_input);
@@ -590,19 +586,26 @@ int main(int argc, char *argv[])
         enum card_value move_value = stringToValue(value_in);
         // find the card by color and value
         Card* move_card = NULL;
-        printf("0\n");
+        printf("1\n");
         findCard(move_color, move_value, &move_card, stacks);
+        if (move_card == NULL)
+        {
+            printf("COULD NOT FIND THE CARD\n");
+            continue;
+        }
 
         // if card to move is the only one on stack, set the stack to be empty after move
         if (move_card->prev == NULL)
         {
-            printf("1\n");
+            printf("2\n");
             int old_stack_idx = findStack(move_card, stacks);
+            printf("END\n");
             stacks[old_stack_idx] = NULL;
+
         }
         else  // otherwise make the previous card the top one
         {
-            printf("2\n");
+            printf("3\n");
             Card* prev_card_of_moved_card = move_card->prev;
             prev_card_of_moved_card->next = NULL;
         }
@@ -612,7 +615,7 @@ int main(int argc, char *argv[])
         // if the target stack is not empty put the card on top
         if (stacks[target_stack_i] != NULL)
         {
-            printf("3\n");
+            printf("4\n");
             // find the top card of the stack
             Card* top_stack_card = NULL;
             findTopCard(&top_stack_card, stacks[target_stack_i]);
@@ -622,7 +625,7 @@ int main(int argc, char *argv[])
         }
         else  // otherwise put it as a first card on stack
         {
-            printf("4\n");
+            printf("5\n");
             stacks[target_stack_i] = move_card;
             move_card->prev = NULL;
         }
