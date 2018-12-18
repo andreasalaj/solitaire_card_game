@@ -23,6 +23,18 @@ enum card_color
 
 const char card_color_str[] = {'R', 'B'};
 
+enum card_color stringToColor(char* string)
+{
+    if (strcasecmp(string, "red") == 0)
+    {
+        return RED;
+    }
+    else if (strcasecmp(string, "black") == 0)
+    {
+        return BLACK;
+    }
+}
+
 enum card_value
 {
   V_A,
@@ -42,6 +54,62 @@ enum card_value
 
 const char *card_value_str[] = {"A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ",
                                 "8 ", "9 ", "10", "J ", "Q ", "K "};
+
+enum card_value stringToValue(char* string)
+{
+    if (strcasecmp(string, "A") == 0)
+    {
+        return V_A;
+    }
+    else if (strcasecmp(string, "2") == 0)
+    {
+        return V_2;
+    }
+    else if (strcasecmp(string, "3") == 0)
+    {
+        return V_3;
+    }
+    else if (strcasecmp(string, "4") == 0)
+    {
+        return V_4;
+    }
+    else if (strcasecmp(string, "5") == 0)
+    {
+        return V_5;
+    }
+    else if (strcasecmp(string, "6") == 0)
+    {
+        return V_6;
+    }
+    else if (strcasecmp(string, "7") == 0)
+    {
+        return V_7;
+    }
+    else if (strcasecmp(string, "8") == 0)
+    {
+        return V_8;
+    }
+    else if (strcasecmp(string, "9") == 0)
+    {
+        return V_9;
+    }
+    else if (strcasecmp(string, "10") == 0)
+    {
+        return V_10;
+    }
+    else if (strcasecmp(string, "J") == 0)
+    {
+        return V_J;
+    }
+    else if (strcasecmp(string, "Q") == 0)
+    {
+        return V_Q;
+    }
+    else if (strcasecmp(string, "K") == 0)
+    {
+        return V_K;
+    }
+}
 
 typedef struct
 {
@@ -220,6 +288,19 @@ void cardToStr(int color, int value, char* label)
   label[3] = '\0';
 }
 
+void printCard(Card* card)
+{
+    if (card != NULL)
+    {
+        char label[4] = "   \0";
+        cardToStr(card->color, card->value, label);
+        printf("%s\n", label);
+    }
+    else
+    {
+        printf("NULLCARD\n");
+    }
+}
 //-----------------------------------------------------------------------------
 ///
 /// stackCardToStr finds card in stack and prints its three character
@@ -353,6 +434,41 @@ void dealCards(Card* deck, Card* stacks[])
   }
 }
 
+void findCard(enum card_color c, enum card_value v, Card** found_card, Card* stacks[])
+{
+    for (int i = 0; i < 7; i++)
+    {
+        *found_card = stacks[i];
+        while (*found_card != NULL) {
+            if ((*found_card)->color == c && (*found_card)->value == v) {
+                return;
+            }
+            *found_card = (*(*found_card)).next;
+        };
+    }
+}
+
+void findTopCard(Card** found_card, Card* stack)
+{
+    *found_card = stack;
+    while ((*(*found_card)).next != NULL) {
+        *found_card = (*(*found_card)).next;
+    };
+}
+
+int findStack(Card* target_card, Card* stacks[])
+{
+    for (int i = 0; i < 7; i++)
+    {
+        Card* card = stacks[i];
+        do {
+            if (card->color == target_card->color && card->value == target_card->value) {
+                return i;
+            }
+            card = (*card).next;
+        } while (card != NULL);
+    }
+}
 
 //-----------------------------------------------------------------------------
 ///
@@ -469,7 +585,48 @@ int main(int argc, char *argv[])
       }
       else
       {
-        // TODO: check if the specified card is valid top card or cards on stacks 1-4 with everything sorted bellow
+        // convert input strings to color and value
+        enum card_color move_color = stringToColor(color_in);
+        enum card_value move_value = stringToValue(value_in);
+        // find the card by color and value
+        Card* move_card = NULL;
+        printf("0\n");
+        findCard(move_color, move_value, &move_card, stacks);
+
+        // if card to move is the only one on stack, set the stack to be empty after move
+        if (move_card->prev == NULL)
+        {
+            printf("1\n");
+            int old_stack_idx = findStack(move_card, stacks);
+            stacks[old_stack_idx] = NULL;
+        }
+        else  // otherwise make the previous card the top one
+        {
+            printf("2\n");
+            Card* prev_card_of_moved_card = move_card->prev;
+            prev_card_of_moved_card->next = NULL;
+        }
+
+        // convert input string to stack index
+        int target_stack_i = strtol(stack_in, (char **)NULL, 10);
+        // if the target stack is not empty put the card on top
+        if (stacks[target_stack_i] != NULL)
+        {
+            printf("3\n");
+            // find the top card of the stack
+            Card* top_stack_card = NULL;
+            findTopCard(&top_stack_card, stacks[target_stack_i]);
+            // put the card on top of that one
+            top_stack_card->next = move_card;
+            move_card->prev = top_stack_card;
+        }
+        else  // otherwise put it as a first card on stack
+        {
+            printf("4\n");
+            stacks[target_stack_i] = move_card;
+            move_card->prev = NULL;
+        }
+
         // TODO: if valid top card check if it's possible to move to target stack and move
         // TODO: if valid substack check the same and move
         // TODO: separate cases if target stacks are 5 or 6 since different sorting applies there
