@@ -1,12 +1,12 @@
 //-----------------------------------------------------------------------------
 // ass3.c
 //
-// <Explanation of the program ...>
-// <... May have multiple lines.>
+// ESP Assignment 3 WS18
+// Simplified solitaire card game
 //
 // Group: Group 5, study assistant Michael Hancianu
 //
-// Authors: <Name> <Matriculum Number>
+// Authors: Andrea Salaj 01624588
 // <Name> <Matriculum Number>
 //-----------------------------------------------------------------------------
 //
@@ -53,13 +53,17 @@ typedef struct
 
 //-----------------------------------------------------------------------------
 ///
-/// readFile
+/// readFile reads configuration file, checks if any error is detected
 ///
-/// @param
-/// @param
+/// @param card_num number of a card
+/// @param MAX_LINE_LEN maximum line length
+/// @param input configfile
+/// @param line one line in a configfile
+/// @param token one word from a line
+/// @param token_num number of words in a line
 ///
 ///
-/// @return
+/// @return three if invalid file is detected
 //
 int readFile(char *filename, Card* deck)
 {
@@ -68,12 +72,12 @@ int readFile(char *filename, Card* deck)
   FILE *input = fopen(filename, "r");
   if (input)
   {
-    char temp[MAX_LINE_LEN];
-    while (fgets(temp, MAX_LINE_LEN, input))
+    char line[MAX_LINE_LEN];
+    while (fgets(line, MAX_LINE_LEN, input))
     {
-      //printf("---- %s", temp);
+      //printf("---- %s", line);
       char *token;
-      token = strtok(temp, " \n");
+      token = strtok(line, " \n");
       int token_num = 0;
       if (token == NULL)
       {
@@ -199,13 +203,14 @@ int readFile(char *filename, Card* deck)
 
 //-----------------------------------------------------------------------------
 ///
-/// cardToStr
+/// cardToStr saves card characteristics into label
 ///
-/// @param
-/// @param
+/// @param color card color
+/// @param value card value
+/// @param label content of a field in certain stack
 ///
 ///
-/// @return
+/// @return void
 //
 void cardToStr(int color, int value, char* label)
 {
@@ -220,11 +225,13 @@ void cardToStr(int color, int value, char* label)
 /// stackCardToStr finds card in stack and prints its three character
 /// representation.
 ///
-/// @param
-/// @param
+/// @param stack relative stack to file
+/// @param card_index index of a card
+/// @param label content of a field in certain stack
+/// @param is_stack0 checks if card is in stack0
 ///
 ///
-/// @return
+/// @return void
 //
 void stackCardToStr(Card* stack, int card_index, char* label, int is_stack0)
 {
@@ -262,13 +269,13 @@ void stackCardToStr(Card* stack, int card_index, char* label, int is_stack0)
 
 //-----------------------------------------------------------------------------
 ///
-/// printField
+/// printField prints game field after reading the configfile
 ///
-/// @param
-/// @param
+/// @param line_counter couts lines of a game field
+/// @param label content of a field in certain stack
 ///
 ///
-/// @return
+/// @return void
 //
 void printField(Card* stacks[])
 {
@@ -300,8 +307,8 @@ void printField(Card* stacks[])
 ///
 /// dealCards
 ///
-/// @param deck: Pointer to the beginning of array of all cards in the game
-/// @param stacks: Array of pointers to the first card of each stack
+/// @param deck Pointer to the beginning of array of all cards in the game
+/// @param stacks Array of pointers to the first card of each stack
 ///
 ///
 /// @return void
@@ -345,15 +352,17 @@ void dealCards(Card* deck, Card* stacks[])
     }
   }
 }
+
+
 //-----------------------------------------------------------------------------
 ///
-/// The main program.
+/// The main program
 ///
-/// @param
-/// @param
+/// @param argc Counter of arguments
+/// @param argv Array
 ///
 ///
-/// @return
+/// @return zero if everything is okay
 //
 int main(int argc, char *argv[])
 {
@@ -383,7 +392,15 @@ int main(int argc, char *argv[])
   {
     printf("esp> ");
     char user_input[256];
-    gets(user_input);  // TODO: implement safe user_input with getc
+    char character;
+    int character_counter = 0;
+
+    while((character = getchar()) != '\n')
+    {
+      user_input[character_counter++] = character;
+    }
+    user_input[character_counter] = '\0';
+    //printf("%s\n", user_input);
 
     char tmp_input_for_counting[256];
     strcpy(tmp_input_for_counting, user_input);
@@ -433,16 +450,20 @@ int main(int argc, char *argv[])
       char *stack_in = strtok(NULL," \n");
 
       // validate move command
-      if (strcasecmp(move_in, "move") != 0 || (strcasecmp(color_in, "black") != 0 && strcasecmp(color_in, "red") != 0)
-          || (strcasecmp(value_in, "A") != 0 && strcasecmp(value_in, "2") != 0 && strcasecmp(value_in, "3") != 0 &&
-              strcasecmp(value_in, "4") != 0 && strcasecmp(value_in, "5") != 0 && strcasecmp(value_in, "6") != 0 &&
-              strcasecmp(value_in, "7") != 0 && strcasecmp(value_in, "8") != 0 && strcasecmp(value_in, "9") != 0 &&
-              strcasecmp(value_in, "10") != 0 && strcasecmp(value_in, "J") != 0 && strcasecmp(value_in, "Q") != 0 &&
-              strcasecmp(value_in, "K") != 0)
-          || strcasecmp(to_in, "to") != 0
-          || (strcasecmp(stack_in, "0") != 0 && strcasecmp(stack_in, "1") != 0 && strcasecmp(stack_in, "2") != 0 &&
-              strcasecmp(stack_in, "3") != 0 && strcasecmp(stack_in, "4") != 0 && strcasecmp(stack_in, "5") != 0 &&
-              strcasecmp(stack_in, "6") != 0))
+      if (strcasecmp(move_in, "move") != 0 ||
+         (strcasecmp(color_in, "black") != 0
+          && strcasecmp(color_in, "red") != 0) ||
+         (strcasecmp(value_in, "A") != 0 && strcasecmp(value_in, "2") != 0
+          && strcasecmp(value_in, "3") != 0 && strcasecmp(value_in, "4") != 0
+          && strcasecmp(value_in, "5") != 0 && strcasecmp(value_in, "6") != 0
+          && strcasecmp(value_in, "7") != 0 && strcasecmp(value_in, "8") != 0
+          && strcasecmp(value_in, "9") != 0 && strcasecmp(value_in, "10") != 0
+          && strcasecmp(value_in, "J") != 0 && strcasecmp(value_in, "Q") != 0
+          &&strcasecmp(value_in, "K") != 0) || strcasecmp(to_in, "to") != 0 ||
+         (strcasecmp(stack_in, "0") != 0 && strcasecmp(stack_in, "1") != 0
+          && strcasecmp(stack_in, "2") != 0 && strcasecmp(stack_in, "3") != 0
+          && strcasecmp(stack_in, "4") != 0 && strcasecmp(stack_in, "5") != 0
+          && strcasecmp(stack_in, "6") != 0))
       {
         printf("[ERR] Invalid command!\n");
       }
