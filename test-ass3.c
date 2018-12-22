@@ -759,11 +759,14 @@ int main(int argc, char *argv[])
           move_card->prev = NULL;
         }
 
-        // TODO: if valid top card check if it's possible to move to target stack and move
-        // TODO: if valid substack check the same and move
-        // TODO: separate cases if target stacks are 5 or 6 since different sorting applies there
-        printf("Not implemented yet...\n");
         printField(stacks);
+      }
+
+      if (stacks[0] == NULL && stacks[1] == NULL && stacks[2] == NULL &&
+          stacks[3] == NULL && stacks[4] == NULL)
+      {
+        free(deck);
+        return 0;
       }
     }
     else
