@@ -249,6 +249,7 @@ int readFile(char *filename, Card* deck)
       }
       card_num++;
     }
+    int num_of_cards = card_num;
     card_num--;  // back to the last card
     deck[card_num].next = NULL;  // last card has no subsequent card
     card_num--;  // back to forlast card
@@ -257,6 +258,25 @@ int readFile(char *filename, Card* deck)
       card_num--;
     }
     fclose(input);
+    // check if valid number of cards
+    if (num_of_cards != 26)
+    {
+      printf("[ERR] Invalid file!\n");
+      return 3;
+    }
+    // check if there are duplicates in the deck
+    for (int card_idx = 0; card_idx < num_of_cards; card_idx++)
+    {
+      for (int cmp_idx = card_idx + 1; cmp_idx < num_of_cards; cmp_idx++)
+      {
+        if (deck[card_idx].color == deck[cmp_idx].color &&
+            deck[card_idx].value == deck[cmp_idx].value)
+        {
+          printf("[ERR] Invalid file!\n");
+          return 3;
+        }
+      }
+    }
     return 0;
   }
   else
