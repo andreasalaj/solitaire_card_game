@@ -25,14 +25,14 @@ const char card_color_str[] = {'R', 'B'};
 
 enum card_color stringToColor(char* string)
 {
-    if (strcasecmp(string, "red") == 0)
-    {
-        return RED;
-    }
-    else if (strcasecmp(string, "black") == 0)
-    {
-        return BLACK;
-    }
+  if (strcasecmp(string, "red") == 0)
+  {
+    return RED;
+  }
+  else if (strcasecmp(string, "black") == 0)
+  {
+    return BLACK;
+  }
 }
 
 enum card_value
@@ -57,58 +57,58 @@ const char *card_value_str[] = {"A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ",
 
 enum card_value stringToValue(char* string)
 {
-    if (strcasecmp(string, "A") == 0)
-    {
-        return V_A;
-    }
-    else if (strcasecmp(string, "2") == 0)
-    {
-        return V_2;
-    }
-    else if (strcasecmp(string, "3") == 0)
-    {
-        return V_3;
-    }
-    else if (strcasecmp(string, "4") == 0)
-    {
-        return V_4;
-    }
-    else if (strcasecmp(string, "5") == 0)
-    {
-        return V_5;
-    }
-    else if (strcasecmp(string, "6") == 0)
-    {
-        return V_6;
-    }
-    else if (strcasecmp(string, "7") == 0)
-    {
-        return V_7;
-    }
-    else if (strcasecmp(string, "8") == 0)
-    {
-        return V_8;
-    }
-    else if (strcasecmp(string, "9") == 0)
-    {
-        return V_9;
-    }
-    else if (strcasecmp(string, "10") == 0)
-    {
-        return V_10;
-    }
-    else if (strcasecmp(string, "J") == 0)
-    {
-        return V_J;
-    }
-    else if (strcasecmp(string, "Q") == 0)
-    {
-        return V_Q;
-    }
-    else if (strcasecmp(string, "K") == 0)
-    {
-        return V_K;
-    }
+  if (strcasecmp(string, "A") == 0)
+  {
+    return V_A;
+  }
+  else if (strcasecmp(string, "2") == 0)
+  {
+    return V_2;
+  }
+  else if (strcasecmp(string, "3") == 0)
+  {
+    return V_3;
+  }
+  else if (strcasecmp(string, "4") == 0)
+  {
+    return V_4;
+  }
+  else if (strcasecmp(string, "5") == 0)
+  {
+    return V_5;
+  }
+  else if (strcasecmp(string, "6") == 0)
+  {
+    return V_6;
+  }
+  else if (strcasecmp(string, "7") == 0)
+  {
+    return V_7;
+  }
+  else if (strcasecmp(string, "8") == 0)
+  {
+    return V_8;
+  }
+  else if (strcasecmp(string, "9") == 0)
+  {
+    return V_9;
+  }
+  else if (strcasecmp(string, "10") == 0)
+  {
+    return V_10;
+  }
+  else if (strcasecmp(string, "J") == 0)
+  {
+    return V_J;
+  }
+  else if (strcasecmp(string, "Q") == 0)
+  {
+    return V_Q;
+  }
+  else if (strcasecmp(string, "K") == 0)
+  {
+    return V_K;
+  }
 }
 
 typedef struct
@@ -395,7 +395,8 @@ void dealCards(Card* deck, Card* stacks[])
 {
   // Go to last card in deck since we start dealing from the top of deck
   Card* card = deck;
-  while ((*card).next != NULL) {
+  while ((*card).next != NULL)
+  {
     card = (*card).next;
   }
 
@@ -417,13 +418,14 @@ void dealCards(Card* deck, Card* stacks[])
       {
         // got to last card of stack
         Card* last_stack_card = stacks[stack_idx];
-        while ((*last_stack_card).next != NULL) {
+        while ((*last_stack_card).next != NULL)
+        {
           last_stack_card = (*last_stack_card).next;
         }
         // attach new card to the top of stack
         last_stack_card->next = card;
         card->prev = last_stack_card;
-      }
+       }
       // take the next card we prepared from the top of deck
       card = next_card_to_deal;
       card->next = NULL; // now it is on top since we removed one card
@@ -431,40 +433,77 @@ void dealCards(Card* deck, Card* stacks[])
   }
 }
 
-void findCard(enum card_color c, enum card_value v, Card** found_card, Card* stacks[])
+//-----------------------------------------------------------------------------
+///
+/// findCard
+///
+/// @param
+/// @param
+///
+///
+/// @return void
+//
+void findCard(enum card_color c, enum card_value v, Card** found_card,
+              Card* stacks[])
 {
-    for (int i = 0; i < 7; i++)
+  for (int stack_num = 0; stack_num < 7; stack_num++)
+  {
+    *found_card = stacks[stack_num];
+    while (*found_card != NULL)
     {
-        *found_card = stacks[i];
-        while (*found_card != NULL) {
-            if ((*found_card)->color == c && (*found_card)->value == v) {
-                return;
-            }
-            *found_card = (*(*found_card)).next;
-        };
-    }
+      if ((*found_card)->color == c && (*found_card)->value == v)
+      {
+        return;
+      }
+      *found_card = (*(*found_card)).next;
+    };
+  }
 }
 
+//-----------------------------------------------------------------------------
+///
+/// findTopCard
+///
+/// @param
+/// @param
+///
+///
+/// @return void
+//
 void findTopCard(Card** found_card, Card* stack)
 {
-    *found_card = stack;
-    while ((*(*found_card)).next != NULL) {
-        *found_card = (*(*found_card)).next;
-    };
+  *found_card = stack;
+  while ((*(*found_card)).next != NULL)
+  {
+    *found_card = (*(*found_card)).next;
+  };
 }
 
+//-----------------------------------------------------------------------------
+///
+/// findStack
+///
+/// @param target_card
+/// @param stacks
+///
+///
+/// @return
+//
 int findStack(Card* target_card, Card* stacks[])
 {
-    for (int i = 0; i < 7; i++)
+  for (int stack_num = 0; stack_num < 7; stack_num++)
+  {
+    Card* card = stacks[stack_num];
+    while (card != NULL)
     {
-        Card* card = stacks[i];
-        while (card != NULL) {
-            if (card->color == target_card->color && card->value == target_card->value) {
-                return i;
-            }
-            card = (*card).next;
-        };
-    }
+      if (card->color == target_card->color &&
+          card->value == target_card->value)
+      {
+        return stack_num;
+      }
+      card = (*card).next;
+    };
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -586,48 +625,49 @@ int main(int argc, char *argv[])
         enum card_value move_value = stringToValue(value_in);
         // find the card by color and value
         Card* move_card = NULL;
-        printf("1\n");
         findCard(move_color, move_value, &move_card, stacks);
         if (move_card == NULL)
         {
-            printf("COULD NOT FIND THE CARD\n");
-            continue;
+          printf("[INFO] Invalid command!\n");
+          continue;
         }
+        // convert input string to stack index
+        int target_stack_i = strtol(stack_in, (char **)NULL, 10);
 
+        if (target_stack_i == 0)
+        {
+          printf("[INFO] Invalid command!\n");
+          continue;
+
+        }
         // if card to move is the only one on stack, set the stack to be empty after move
         if (move_card->prev == NULL)
         {
-            printf("2\n");
-            int old_stack_idx = findStack(move_card, stacks);
-            printf("END\n");
-            stacks[old_stack_idx] = NULL;
+          int old_stack_idx = findStack(move_card, stacks);
+          stacks[old_stack_idx] = NULL;
 
         }
         else  // otherwise make the previous card the top one
         {
-            printf("3\n");
-            Card* prev_card_of_moved_card = move_card->prev;
-            prev_card_of_moved_card->next = NULL;
+          Card* prev_card_of_moved_card = move_card->prev;
+          prev_card_of_moved_card->next = NULL;
         }
 
-        // convert input string to stack index
-        int target_stack_i = strtol(stack_in, (char **)NULL, 10);
+
         // if the target stack is not empty put the card on top
         if (stacks[target_stack_i] != NULL)
         {
-            printf("4\n");
-            // find the top card of the stack
-            Card* top_stack_card = NULL;
-            findTopCard(&top_stack_card, stacks[target_stack_i]);
-            // put the card on top of that one
-            top_stack_card->next = move_card;
-            move_card->prev = top_stack_card;
+          // find the top card of the stack
+          Card* top_stack_card = NULL;
+          findTopCard(&top_stack_card, stacks[target_stack_i]);
+          // put the card on top of that one
+          top_stack_card->next = move_card;
+          move_card->prev = top_stack_card;
         }
         else  // otherwise put it as a first card on stack
         {
-            printf("5\n");
-            stacks[target_stack_i] = move_card;
-            move_card->prev = NULL;
+          stacks[target_stack_i] = move_card;
+          move_card->prev = NULL;
         }
 
         // TODO: if valid top card check if it's possible to move to target stack and move
