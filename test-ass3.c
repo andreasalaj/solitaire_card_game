@@ -638,8 +638,15 @@ int main(int argc, char *argv[])
         }
         // convert input string to stack index
         int target_stack_i = strtol(stack_in, (char **)NULL, 10);
-
-        if (target_stack_i == 0)
+        int move_card_stack_idx = findStack(move_card, stacks);
+        // it is not allowed to:
+        // - move to stack 0
+        // - move multiple cards to deposit stacks
+        // - move multiple cards from stack 0
+        if (target_stack_i == 0 ||
+            ((target_stack_i == 5 || target_stack_i == 6) &&
+             move_card->next != NULL) ||
+            (move_card_stack_idx == 0 && move_card->next != NULL))
         {
           printf("[INFO] Invalid move command!\n");
           continue;
