@@ -462,7 +462,7 @@ void findCard(enum card_color c, enum card_value v, Card** found_card,
 
 //-----------------------------------------------------------------------------
 ///
-/// findTopCard
+/// findTopCard find top card of the stack if stack is not empty
 ///
 /// @param
 /// @param
@@ -472,6 +472,11 @@ void findCard(enum card_color c, enum card_value v, Card** found_card,
 //
 void findTopCard(Card** found_card, Card* stack)
 {
+
+  if (stack == NULL)
+  {
+    return;
+  }
   *found_card = stack;
   while ((*(*found_card)).next != NULL)
   {
@@ -616,7 +621,7 @@ int main(int argc, char *argv[])
           && strcasecmp(stack_in, "4") != 0 && strcasecmp(stack_in, "5") != 0
           && strcasecmp(stack_in, "6") != 0))
       {
-        printf("[ERR] Invalid command!\n");
+        printf("[INFO] Invalid move command!\n");
       }
       else
       {
@@ -636,10 +641,41 @@ int main(int argc, char *argv[])
 
         if (target_stack_i == 0)
         {
-          printf("[INFO] Invalid command!\n");
+          printf("[INFO] Invalid move command!\n");
           continue;
-
         }
+
+        Card* top_stack_card = NULL;
+        findTopCard(&top_stack_card, stacks[target_stack_i]);
+        // if target_stack_i 1 2 3 4, razlicita boja, od najvece do najmanje
+
+        if (target_stack_i == 1 || target_stack_i == 2 || target_stack_i == 3
+            || target_stack_i == 4)
+        {
+          if (move_card->color == top_stack_card->color)
+          {
+            printf("[INFO] Invalid move command!\n");
+            continue;
+          }
+          else if(top_stack_card->value != move_card->value + 1)
+          {
+            printf("[INFO] Invalid move command!\n");
+            continue;
+          }
+        }
+        else
+        {
+          if ((top_stack_card == NULL && move_card->value != 0) ||
+              (top_stack_card != NULL && move_card->color !=
+               top_stack_card->color) ||
+              (top_stack_card != NULL && top_stack_card->value !=
+               move_card->value - 1))
+          {
+            printf("[INFO] Invalid move command!\n");
+            continue;
+          }
+        }
+
         // if card to move is the only one on stack, set the stack to be empty after move
         if (move_card->prev == NULL)
         {
@@ -658,8 +694,8 @@ int main(int argc, char *argv[])
         if (stacks[target_stack_i] != NULL)
         {
           // find the top card of the stack
-          Card* top_stack_card = NULL;
-          findTopCard(&top_stack_card, stacks[target_stack_i]);
+
+
           // put the card on top of that one
           top_stack_card->next = move_card;
           move_card->prev = top_stack_card;
