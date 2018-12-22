@@ -679,12 +679,14 @@ int main(int argc, char *argv[])
         if (target_stack_i == 1 || target_stack_i == 2 || target_stack_i == 3
             || target_stack_i == 4)
         {
-          if (move_card->color == top_stack_card->color)
+          if (top_stack_card != NULL &&
+              move_card->color == top_stack_card->color)
           {
             printf("[INFO] Invalid move command!\n");
             continue;
           }
-          else if(top_stack_card->value != move_card->value + 1)
+          else if(top_stack_card != NULL &&
+                  top_stack_card->value != move_card->value + 1)
           {
             printf("[INFO] Invalid move command!\n");
             continue;
@@ -697,6 +699,33 @@ int main(int argc, char *argv[])
                top_stack_card->color) ||
               (top_stack_card != NULL && top_stack_card->value !=
                move_card->value - 1))
+          {
+            printf("[INFO] Invalid move command!\n");
+            continue;
+          }
+        }
+
+        if (move_card_stack_idx <= 4 && move_card_stack_idx > 0 &&
+            target_stack_i <= 4 && target_stack_i > 0 &&
+            move_card->next != NULL)
+        {
+          Card* next_card = move_card->next;
+          int prev_value = move_card->value;
+          int prev_color = move_card->color;
+          int done = 0;
+          while (next_card != NULL)
+          {
+            if (prev_value != next_card->value + 1 ||
+                prev_color == next_card->color)
+            {
+              done = 1;
+              break;
+            }
+            prev_value = next_card->value;
+            prev_color = next_card->color;
+            next_card = next_card->next;
+          }
+          if (done)
           {
             printf("[INFO] Invalid move command!\n");
             continue;
@@ -720,9 +749,6 @@ int main(int argc, char *argv[])
         // if the target stack is not empty put the card on top
         if (stacks[target_stack_i] != NULL)
         {
-          // find the top card of the stack
-
-
           // put the card on top of that one
           top_stack_card->next = move_card;
           move_card->prev = top_stack_card;
