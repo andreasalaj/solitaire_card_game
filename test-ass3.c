@@ -33,6 +33,7 @@ enum card_color stringToColor(char* string)
   {
     return BLACK;
   }
+  return -1;
 }
 
 enum card_value
@@ -109,9 +110,10 @@ enum card_value stringToValue(char* string)
   {
     return V_K;
   }
+  return -1;
 }
 
-typedef struct
+typedef struct Card
 {
   enum card_color color;
   enum card_value value;
@@ -381,23 +383,20 @@ void printField(Card* stacks[])
   printf("---------------------------------------\n");
   for (int line_counter = 0; line_counter < 16; line_counter++)
   {
-    char label0[4] = "   \0";
-    char label1[4] = "   \0";
-    char label2[4] = "   \0";
-    char label3[4] = "   \0";
-    char label4[4] = "   \0";
-    char label5[4] = "   \0";
-    char label6[4] = "   \0";
-    stackCardToStr(stacks[0], line_counter, &label0, 1);
-    stackCardToStr(stacks[1], line_counter, &label1, 0);
-    stackCardToStr(stacks[2], line_counter, &label2, 0);
-    stackCardToStr(stacks[3], line_counter, &label3, 0);
-    stackCardToStr(stacks[4], line_counter, &label4, 0);
-    stackCardToStr(stacks[5], line_counter, &label5, 0);
-    stackCardToStr(stacks[6], line_counter, &label6, 0);
-
-    printf("%s | %s | %s | %s | %s | %s | %s\n", label0, label1, label2,
-           label3, label4, label5, label6);
+    char label[] = "   \0";
+    for (int stack_idx = 0; stack_idx <= 6; stack_idx++)
+    {
+      stackCardToStr(stacks[stack_idx], line_counter, label, stack_idx == 0);
+      if (stack_idx == 6)
+      {
+        printf("%s\n", label);
+      }
+      else
+      {
+        printf("%s | ", label);
+      }
+      label[0] = ' '; label[1] = ' '; label[2] = ' ';
+    }
   }
 }
 
@@ -421,7 +420,6 @@ void dealCards(Card* deck, Card* stacks[])
   }
 
   Card* next_card_to_deal = NULL;
-  int start_stack_idx = 1;
   for (int start_stack_idx = 1; start_stack_idx <=4; start_stack_idx++)
   {
     for (int stack_idx = start_stack_idx; stack_idx <=4; stack_idx++)
@@ -529,6 +527,7 @@ int findStack(Card* target_card, Card* stacks[])
       card = (*card).next;
     };
   }
+  return -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -648,8 +647,13 @@ int main(int argc, char *argv[])
         // convert input strings to color and value
         enum card_color move_color = stringToColor(color_in);
         enum card_value move_value = stringToValue(value_in);
+        if (move_color == -1 || move_value == -1)
+        {
+          printf("[INFO] Invalid command!\n");
+          continue;
+        }
         // find the card by color and value
-        Card* move_card = NULL;
+        struct Card* move_card = NULL;
         findCard(move_color, move_value, &move_card, stacks);
         if (move_card == NULL)
         {
@@ -659,6 +663,11 @@ int main(int argc, char *argv[])
         // convert input string to stack index
         int target_stack_i = strtol(stack_in, (char **)NULL, 10);
         int move_card_stack_idx = findStack(move_card, stacks);
+        if (move_card_stack_idx == -1)
+        {
+          printf("[INFO] Invalid move command!\n");
+          continue;
+        }
         // it is not allowed to:
         // - move to stack 0
         // - move multiple cards to deposit stacks
@@ -672,7 +681,7 @@ int main(int argc, char *argv[])
           continue;
         }
 
-        Card* top_stack_card = NULL;
+        struct Card* top_stack_card = NULL;
         findTopCard(&top_stack_card, stacks[target_stack_i]);
         // if target_stack_i 1 2 3 4, razlicita boja, od najvece do najmanje
 
@@ -736,6 +745,11 @@ int main(int argc, char *argv[])
         if (move_card->prev == NULL)
         {
           int old_stack_idx = findStack(move_card, stacks);
+          if (old_stack_idx == -1)
+          {
+            printf("[INFO] Invalid move command!\n");
+            continue;
+          }
           stacks[old_stack_idx] = NULL;
 
         }
