@@ -1,13 +1,5 @@
 //-----------------------------------------------------------------------------
-// ass3.c
-//
-// ESP Assignment 3 WS18
 // Simplified solitaire card game
-//
-// Group: Group 5, study assistant Michael Hancianu
-//
-// Authors: Andrea Salaj 01624588
-// <Name> <Matriculum Number>
 //-----------------------------------------------------------------------------
 //
 
